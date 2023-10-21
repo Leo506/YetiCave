@@ -4,6 +4,7 @@ require_once('helpers.php');
 require_once('functions.php');
 require_once('init.php');
 
+
 session_start();
 
 $errors = validate_form($con);
