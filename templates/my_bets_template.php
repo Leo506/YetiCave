@@ -7,13 +7,13 @@
                     <div class="rates__img">
                         <img src="../<?= $bet['image'] ?>" alt="" width="54" height="40">
                     </div>
-                    <h3 class="rates__title"><a href="/lot.php?id=<?=$bet['lotId']?>"><?= $bet['lotName'] ?></a></h3>
+                    <h3 class="rates__title"><a href="/lot.php?id=<?= $bet['lotId'] ?>"><?= $bet['lotName'] ?></a></h3>
                 </td>
                 <td class="rates__category">
                     <?= $bet['category'] ?>
                 </td>
                 <td class="rates__timer">
-                    <?=get_lot_timer($bet['end_date'])?>
+                    <?= get_lot_timer($bet['end_date']) ?>
                 </td>
                 <td class="rates__price">
                     <?= formatPrice($bet['summ']) ?>

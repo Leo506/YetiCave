@@ -8,7 +8,7 @@ if ($_SESSION['userId'] === $lotInfo['lastBettedUserId'])
 ?>
 
 <div class="lot-item__state">
-    <?=get_lot_timer($lotInfo["end_date"], ['lot-item__timer timer'])?>
+    <?= get_lot_timer($lotInfo["end_date"], ['lot-item__timer timer']) ?>
     <div class="lot-item__cost-state">
         <div class="lot-item__rate">
             <span class="lot-item__amount">Текущая цена</span>

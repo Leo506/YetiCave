@@ -168,7 +168,8 @@ function get_user_bets(mysqli $connection, int $userId): array
     return fetch_array($sql, $connection, [$userId]);
 }
 
-function get_lots_by_category_name(mysqli $connection, string $categoryName, int $page, int $limit): array {
+function get_lots_by_category_name(mysqli $connection, string $categoryName, int $page, int $limit): array
+{
     $sql = "SELECT l.id, l.name, l.creating_date, l.description, l.image, l.start_price, l.end_date, l.step, c.name category, c.code FROM Lot l
             INNER JOIN Category c on l.categoryId = c.id
             WHERE c.name = ? AND l.end_date >= CURRENT_DATE
@@ -177,7 +178,8 @@ function get_lots_by_category_name(mysqli $connection, string $categoryName, int
     return fetch_array($sql, $connection, [$categoryName, $limit, $offset]);
 }
 
-function lots_by_category_name_count(mysqli $connection, $categoryName): int {
+function lots_by_category_name_count(mysqli $connection, $categoryName): int
+{
     $sql = "SELECT COUNT(*) FROM Lot l
             INNER JOIN Category c on l.categoryId = c.id
             WHERE c.name = ? AND l.end_date >= CURRENT_DATE;";

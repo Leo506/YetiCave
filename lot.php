@@ -52,7 +52,8 @@ function not_found_response(mysqli $con): void
 }
 
 
-function validateAddBetForm(mysqli $connection, array $lotInfo): string {
+function validateAddBetForm(mysqli $connection, array $lotInfo): string
+{
     $INVALID_FORMAT = "Enter a number";
     $BET_TOO_SMALL = "Your bet is too small";
     $NO_ERRORS = "";
@@ -62,14 +63,14 @@ function validateAddBetForm(mysqli $connection, array $lotInfo): string {
 
     if (!filter_var($_POST['cost'], FILTER_VALIDATE_INT))
         return $INVALID_FORMAT;
-    
+
     $maxBet = get_max_bet($connection, $lotInfo['id']);
     $betValue = $_POST['cost'];
     if ($maxBet === 0 && $betValue < $lotInfo['start_price'])
         return $BET_TOO_SMALL;
-    
+
     if ($betValue < $maxBet + $lotInfo['step'] && $maxBet !== 0)
         return $BET_TOO_SMALL;
-    
+
     return $NO_ERRORS;
 }
