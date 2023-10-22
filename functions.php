@@ -19,7 +19,7 @@ function get_lot_timer(string $endDate, array $defaultClasses = ['lot__timer', '
 function get_dt_range(string $date): array
 {
     date_default_timezone_set("Asia/Yekaterinburg");
-    $lotTime = strtotime($date . "24:00:00");
+    $lotTime = strtotime($date . "23:59:59");
     $currentTime = time();
     $remainSecs = $lotTime - $currentTime;
     $hours = floor($remainSecs / 3600);
@@ -38,6 +38,22 @@ function get_new_lots(mysqli $connection): array
     WHERE end_date >= CURRENT_DATE
     ORDER BY creating_date DESC;";
     return fetch_array($sql, $connection);
+}
+
+function get_expired_lots(mysqli $connection): array {
+    $sql = "SELECT * FROM Lot WHERE end_date <= CURRENT_DATE";
+    return fetch_array($sql, $connection);
+}
+
+function get_last_bet_for_lot(mysqli $connection, int $lotId): ?array {
+    $sql = "SELECT * FROM Bet WHERE lotId = ? ORDER BY date DESC LIMIT 1";
+    $bets = fetch_array($sql, $connection, [$lotId]);
+    return $bets[0] ?? null;
+}
+
+function set_winner_for_lot(mysqli $connection, int $lotId, int $userId): void {
+    $sql = "UPDATE Lot SET winnerId = ? WHERE id = ?";
+    execute_db_command($sql, $connection, [$userId, $lotId]);
 }
 
 function get_all_categories(mysqli $connection): array
@@ -89,7 +105,6 @@ function is_user_already_exists(mysqli $connection, string $email): bool
 {
     $sql = "SELECT 1 FROM User WHERE email = ?";
     $user = fetch_array($sql, $connection, [$email]);
-    var_dump($user);
     return !empty($user);
 }
 
@@ -174,6 +189,7 @@ function get_lots_by_category_name(mysqli $connection, string $categoryName, int
     $sql = "SELECT l.id, l.name, l.creating_date, l.description, l.image, l.start_price, l.end_date, l.step, c.name category, c.code FROM Lot l
             INNER JOIN Category c on l.categoryId = c.id
             WHERE c.name = ? AND l.end_date >= CURRENT_DATE
+            ORDER BY creating_date DESC
             LIMIT ? OFFSET ?;";
     $offset = ($page - 1) * $limit;
     return fetch_array($sql, $connection, [$categoryName, $limit, $offset]);

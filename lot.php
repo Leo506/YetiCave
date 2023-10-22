@@ -54,14 +54,18 @@ function not_found_response(mysqli $con): void
 
 function validateAddBetForm(mysqli $connection, array $lotInfo): string
 {
-    $INVALID_FORMAT = "Enter a number";
-    $BET_TOO_SMALL = "Your bet is too small";
+    $INVALID_FORMAT = "Введите число";
+    $BET_TOO_SMALL = "Ваша ставка слишком мала";
     $NO_ERRORS = "";
+    $INPUT_REQUIRED = "Заполните поле";
 
     if (empty($_POST))
         return $NO_ERRORS;
 
-    if (!filter_var($_POST['cost'], FILTER_VALIDATE_INT))
+    if (empty($_POST['cost']))
+        return $INPUT_REQUIRED;
+
+    if (filter_var($_POST['cost'], FILTER_VALIDATE_INT) === false)
         return $INVALID_FORMAT;
 
     $maxBet = get_max_bet($connection, $lotInfo['id']);
