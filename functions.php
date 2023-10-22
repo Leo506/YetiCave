@@ -85,11 +85,12 @@ function get_last_lot_id(mysqli $connection): int
 }
 
 
-function get_user_by_email(mysqli $connection, string $email): array|bool
+function is_user_already_exists(mysqli $connection, string $email): bool
 {
-    $sql = "SELECT * FROM User WHERE email = ?";
+    $sql = "SELECT 1 FROM User WHERE email = ?";
     $user = fetch_array($sql, $connection, [$email]);
-    return empty($user) ? false : $user;
+    var_dump($user);
+    return !empty($user);
 }
 
 

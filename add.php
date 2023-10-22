@@ -58,40 +58,82 @@ function validateForm(): array
     if (!$_POST)
         return $errors;
 
-    if (!$_POST["lot-name"])
-        $errors["lot-name"] = "Lot name must be entered";
+    $fields = ['lot-name', 'lot-rate', 'lot-date', 'lot-step', 'category', 'message'];
+    $checks = [
+        'lot-rate' => 'validate_lot_rate',
+        'lot-date' => 'validate_lot_date',
+        'lot-step' => 'validate_lot_step',
+        'category' => 'validate_lot_category',
+        'message' => 'validate_lot_description'
+    ];
+    foreach ($fields as $field) {
+        if (empty($_POST[$field] ?? ""))
+            $errors[$field] = "Поле должно быть заполнено";
+        else if (isset($checks[$field]))
+            $errors = $checks[$field]($errors);
+    }
 
+    $errors = validate_lot_image($errors);
+
+    return $errors;
+}
+
+function validate_lot_image(array $errors): array
+{
     if (isset($_FILES['img']) && !empty($_FILES["img"]["tmp_name"])) {
         $mimeType = mime_content_type($_FILES["img"]["tmp_name"]);
         if (!in_array($mimeType, ["image/jpg", "image/jpeg", "image/png"]))
-            $errors["img"] = "Incorrect file format";
+            $errors["img"] = "Некорректный формат файла";
         else
             move_uploaded_file($_FILES['img']['tmp_name'], get_file_path());
     } else
-        $errors["img"] = "Image is required";
+        $errors["img"] = "Загрузите изображение";
 
+    return $errors;
+}
 
+function validate_lot_rate(array $errors): array
+{
     if (!filter_var($_POST['lot-rate'], FILTER_VALIDATE_INT))
-        $errors['lot-rate'] = 'Enter a number';
+        $errors['lot-rate'] = 'Введите число';
     else if ($_POST["lot-rate"] <= 0)
-        $errors["lot-rate"] = "Start price must be more than zero";
+        $errors["lot-rate"] = "Начальная цена должна быть больше 0";
 
+    return $errors;
+}
+
+function validate_lot_date(array $errors): array
+{
+    echo $_POST['lot-date'];
     if (!is_date_valid($_POST["lot-date"]))
-        $errors["lot-date"] = "End date must be in \"YYYY-mm-dd\" format";
+        $errors["lot-date"] = "Дата окончания должна быть в формате \"ГГГГ-MM-ДД\"";
     if ((strtotime($_POST["lot-date"]) - time()) / 60 / 60 / 24 < 1)
-        $errors["lot-date"] = "End date must be more than current date at least by 1 day";
+        $errors["lot-date"] = "Дата окончания должна быть хотя бы на 1 день больше текущей даты";
 
-    if (!filter_var($_POST['lot-step'], FILTER_VALIDATE_INT))
-        $errors['lot-step'] = 'Enter a number';
+    return $errors;
+}
+
+function validate_lot_step(array $errors): array
+{
+    if (filter_var($_POST['lot-step'], FILTER_VALIDATE_INT) === false)
+        $errors['lot-step'] = 'Введите число';
     else if ($_POST["lot-step"] <= 0)
-        $errors["lot-step"] = "Lot step must be more than zero";
+        $errors["lot-step"] = "Шаг ставки должен быть больше нуля";
 
+    return $errors;
+}
+
+function validate_lot_category(array $errors): array
+{
     if ($_POST["category"] === "Выберите категорию")
-        $errors["category"] = "Select category";
+        $errors["category"] = "Выберите категорию";
 
-    if (!$_POST['message'])
-        $errors['message'] = "Description must be entered";
+    return $errors;
+}
 
+function validate_lot_description(array $errors): array {
+    if (strlen($_POST['message']) > 500)
+        $errors['message'] = "Слишком длинное описание";
     return $errors;
 }
 

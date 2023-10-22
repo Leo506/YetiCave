@@ -41,7 +41,7 @@ function validate_form(mysqli $connecion): array
     if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
         $errors['email'] = 'Enter a valid email';
 
-    if (get_user_by_email($connecion, $_POST['email']))
+    if (is_user_already_exists($connecion, $_POST['email']))
         $errors['email'] = 'There is user with same email';
 
     return $errors;
