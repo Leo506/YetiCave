@@ -12,10 +12,10 @@ if ($_SESSION['userId'] === $lotInfo['lastBettedUserId'])
     <div class="lot-item__cost-state">
         <div class="lot-item__rate">
             <span class="lot-item__amount">Текущая цена</span>
-            <span class="lot-item__cost"><?= formatPrice($maxBet === 0 ? $lotInfo['start_price'] : $maxBet) ?></span>
+            <span class="lot-item__cost"><?= format_price($maxBet === 0 ? $lotInfo['start_price'] : $maxBet) ?></span>
         </div>
         <div class="lot-item__min-cost">
-            Мин. ставка <span><?= formatPrice($maxBet === 0 ? $lotInfo['start_price'] : $lotInfo["step"] + $maxBet) ?></span>
+            Мин. ставка <span><?= format_price($maxBet === 0 ? $lotInfo['start_price'] : $lotInfo["step"] + $maxBet) ?></span>
         </div>
     </div>
     <form class="lot-item__form" action="lot.php?id=<?= $lotInfo["id"] ?>" method="post" autocomplete="off">

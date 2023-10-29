@@ -14,7 +14,7 @@ if (!$lotInfo) {
     return;
 }
 
-$formError = validateAddBetForm($con, $lotInfo);
+$formError = validate_add_bet_form($con, $lotInfo);
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($formError)) {
     add_bet($con, $_POST['cost'], $_SESSION['userId'], $lotId);
     header("Location: lot.php?id=" . $lotId);
@@ -52,7 +52,7 @@ function not_found_response(mysqli $con): void
 }
 
 
-function validateAddBetForm(mysqli $connection, array $lotInfo): string
+function validate_add_bet_form(mysqli $connection, array $lotInfo): string
 {
     $INVALID_FORMAT = "Введите число";
     $BET_TOO_SMALL = "Ваша ставка слишком мала";

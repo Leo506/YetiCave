@@ -25,7 +25,7 @@ print_form($con, $errors, [
 ]);
 
 
-function validate_form(mysqli $connecion): array
+function validate_form(mysqli $connection): array
 {
     $errors = [];
     if (!$_POST)
@@ -37,13 +37,23 @@ function validate_form(mysqli $connecion): array
         if (empty($_POST[$field]))
             $errors[$field] = "Field must be filled";
     }
+    
+    return validate_email_address($connection, $_POST['email'], $errors);
+}
 
-    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+function validate_email_address(mysqli $connection, string $email, array $errors): array
+{
+    if (isset($errors['email']))
+        return $errors;
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Enter a valid email';
+        return $errors;
+    }
 
-    if (is_user_already_exists($connecion, $_POST['email']))
+    if (is_user_already_exists($connection, $email))
         $errors['email'] = 'There is user with same email';
-
+    
     return $errors;
 }
 

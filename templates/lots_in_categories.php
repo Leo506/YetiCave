@@ -18,10 +18,9 @@
     $pagginationUrlFunction = function (int $page): string {
         return "/category.php?name=" . $_GET['name'] . "&page=" . $page;
     };
-    $pagginationList = include_template("pagination_list.php", [
+    echo include_template("pagination_list.php", [
         "pagesCount" => $pagesCount,
         "create_paggination_url" => $pagginationUrlFunction
     ]);
-    echo $pagginationList;
     ?>
 </div>

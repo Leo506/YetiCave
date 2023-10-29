@@ -15,10 +15,9 @@
     </div>
     <ul class="lots__list">
         <?php foreach ($lots as $lot) {
-            $lotCard = include_template("lot_card.php", [
+            echo include_template("lot_card.php", [
                 "lot" => $lot
             ]);
-            echo $lotCard;
         } ?>
 
     </ul>

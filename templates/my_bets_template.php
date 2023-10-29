@@ -16,7 +16,7 @@
                     <?= get_lot_timer($bet['end_date']) ?>
                 </td>
                 <td class="rates__price">
-                    <?= formatPrice($bet['summ']) ?>
+                    <?= format_price($bet['summ']) ?>
                 </td>
                 <td class="rates__time">
                     <?= get_past_time_string($bet['date']) ?> назад

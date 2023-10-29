@@ -39,7 +39,15 @@ function validate_form(): array
             $errors[$field] = "Поле должно быть заполнено";
     }
 
-    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+    return validate_email_address($_POST['email'], $errors);
+}
+
+function validate_email_address(string $email, array $errors): array
+{
+    if (isset($errors['email']))
+        return $errors;
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL))
         $errors['email'] = 'Некорректный email адрес';
 
     return $errors;

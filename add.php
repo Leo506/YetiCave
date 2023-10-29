@@ -10,7 +10,7 @@ if (!is_auth()) {
     return;
 }
 
-$errors = validateForm();
+$errors = validate_form();
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($errors)) {
     create_new_lot($con);
     return;
@@ -52,13 +52,14 @@ function print_add_form(mysqli $connection, array $errors)
     print_layout($form, $connection);
 }
 
-function validateForm(): array
+function validate_form(): array
 {
-    $errors = [];
     if (!$_POST)
-        return $errors;
+        return [];
 
-    $fields = ['lot-name', 'lot-rate', 'lot-date', 'lot-step', 'category', 'message'];
+    $errors = validate_lot_image([]);
+    
+    $requiredfields = ['lot-name', 'lot-rate', 'lot-date', 'lot-step', 'category', 'message'];
     $checks = [
         'lot-rate' => 'validate_lot_rate',
         'lot-date' => 'validate_lot_date',
@@ -66,37 +67,44 @@ function validateForm(): array
         'category' => 'validate_lot_category',
         'message' => 'validate_lot_description'
     ];
-    foreach ($fields as $field) {
-        if (empty($_POST[$field] ?? ""))
+    foreach ($requiredfields as $field) {
+        if (empty($_POST[$field] ?? "")) {
             $errors[$field] = "Поле должно быть заполнено";
-        else if (isset($checks[$field]))
+            continue;
+        }
+        
+        if (isset($checks[$field]))
             $errors = $checks[$field]($errors);
     }
-
-    $errors = validate_lot_image($errors);
 
     return $errors;
 }
 
 function validate_lot_image(array $errors): array
 {
-    if (isset($_FILES['img']) && !empty($_FILES["img"]["tmp_name"])) {
-        $mimeType = mime_content_type($_FILES["img"]["tmp_name"]);
-        if (!in_array($mimeType, ["image/jpg", "image/jpeg", "image/png"]))
-            $errors["img"] = "Некорректный формат файла";
-        else
-            move_uploaded_file($_FILES['img']['tmp_name'], get_file_path());
-    } else
-        $errors["img"] = "Загрузите изображение";
+    if (!isset($_FILES['img']) || empty($_FILES['img']['tmp_name'])) {
+        $errors['img'] = 'Загрузите изображение';
+        return $errors;
+    }
 
+    $mimeType = mime_content_type($_FILES["img"]["tmp_name"]);
+    if (!in_array($mimeType, ["image/jpg", "image/jpeg", "image/png"])) {
+        $errors['img'] = 'Некорректный формат файла';
+        return $errors;
+    }
+
+    move_uploaded_file($_FILES['img']['tmp_name'], get_file_path());
     return $errors;
 }
 
 function validate_lot_rate(array $errors): array
 {
-    if (!filter_var($_POST['lot-rate'], FILTER_VALIDATE_INT))
+    if (!filter_var($_POST['lot-rate'], FILTER_VALIDATE_INT)) {
         $errors['lot-rate'] = 'Введите число';
-    else if ($_POST["lot-rate"] <= 0)
+        return $errors;
+    }
+
+    if ($_POST["lot-rate"] <= 0)
         $errors["lot-rate"] = "Начальная цена должна быть больше 0";
 
     return $errors;
@@ -104,9 +112,11 @@ function validate_lot_rate(array $errors): array
 
 function validate_lot_date(array $errors): array
 {
-    echo $_POST['lot-date'];
-    if (!is_date_valid($_POST["lot-date"]))
+    if (!is_date_valid($_POST["lot-date"])) {
         $errors["lot-date"] = "Дата окончания должна быть в формате \"ГГГГ-MM-ДД\"";
+        return $errors;
+    }
+
     if ((strtotime($_POST["lot-date"]) - time()) / 60 / 60 / 24 < 1)
         $errors["lot-date"] = "Дата окончания должна быть хотя бы на 1 день больше текущей даты";
 
@@ -115,9 +125,12 @@ function validate_lot_date(array $errors): array
 
 function validate_lot_step(array $errors): array
 {
-    if (filter_var($_POST['lot-step'], FILTER_VALIDATE_INT) === false)
+    if (filter_var($_POST['lot-step'], FILTER_VALIDATE_INT) === false) {
         $errors['lot-step'] = 'Введите число';
-    else if ($_POST["lot-step"] <= 0)
+        return $errors;
+    }
+    
+    if ($_POST["lot-step"] <= 0)
         $errors["lot-step"] = "Шаг ставки должен быть больше нуля";
 
     return $errors;
@@ -131,7 +144,8 @@ function validate_lot_category(array $errors): array
     return $errors;
 }
 
-function validate_lot_description(array $errors): array {
+function validate_lot_description(array $errors): array
+{
     if (strlen($_POST['message']) > 500)
         $errors['message'] = "Слишком длинное описание";
     return $errors;

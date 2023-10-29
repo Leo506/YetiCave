@@ -6,10 +6,9 @@
         <?php else : ?>
             <ul class="lots__list">
                 <?php foreach ($lots as $lot) {
-                    $lotCard = include_template("lot_card.php", [
+                    echo include_template("lot_card.php", [
                         "lot" => $lot
                     ]);
-                    echo $lotCard;
                 } ?>
             </ul>
         <?php endif; ?>
@@ -18,11 +17,10 @@
     $pagginationUrlFunction = function (int $page): string {
         return "/search.php?search=" . $_GET['search'] . '&' . 'page=' . $page;
     };
-    $paginationList = include_template("pagination_list.php", [
+    echo include_template("pagination_list.php", [
         "pagesCount" => $pagesCount,
         "create_paggination_url" => $pagginationUrlFunction
     ]);
-    echo $paginationList;
     ?>
 
 </div>

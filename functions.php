@@ -2,7 +2,7 @@
 require_once('helpers.php');
 require_once('database_helpers.php');
 
-function formatPrice(int $price): string
+function format_price(int $price): string
 {
     $formattedString = number_format($price, thousands_separator: ' ');
     return "$formattedString ₽";
@@ -238,4 +238,14 @@ function print_layout(string $pageContent, mysqli $connection, bool $includeTopC
     ]);
 
     print($layout_content);
+}
+
+function get_form_item_error_class(array $errors, string $errorKey): string {
+    if (isset($errors[$errorKey]))
+        return "form__item--invalid";
+    return "";
+}
+
+function get_error_text(array $errors, string $errorKey): string {
+    return $errors[$errorKey] ?? "";
 }
